@@ -44,15 +44,20 @@ int main(void)
 	res=1;
 	while(res)
 	{
-		res=GSM_Dect();
+		res = GSM_Dect();
 		delay_ms(2000);
 	}
-  while (1)
-  {
-		delay_ms(2000);
-		
-		
-		delay_ms(2000);
-  }
+  
+	while(1)
+	{
+		res=1;
+		while(res)
+		{
+			res = SIM900A_CONNECT_SERVER_SEND_INFOR((u8*)"win-ad.eastus.cloudapp.azure.com",(u8*)"9000");	
+			delay_ms(2000);			
+		}
+		SIM900A_GPRS_SEND_DATA((u8*)"Great");
+		delay_ms(10000);
+	}
 }
  
