@@ -11,7 +11,11 @@
 
 ////////////////////////////////////////////////////////////////////////////////// 	  
 //////////////////////////////////////////////////////////////////
-//加入以下代码,支持printf函数,而不需要选择use MicroLIB	  
+//加入以下代码,支持printf函数,而不需要选择use MicroLIB	
+
+#ifndef __USART_PRINT
+#define __USART_PRINT	
+
 #if 1
 #pragma import(__use_no_semihosting)             
 //标准库需要的支持函数                 
@@ -33,6 +37,8 @@ int fputc(int ch, FILE *f)
     USART1->DR = (u8) ch;      
 	return ch;
 }
+#endif 
+
 #endif 
 //#if EN_USART1_RX   //如果使能了接收
 ////串口1中断服务程序
