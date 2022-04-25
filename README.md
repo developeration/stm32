@@ -1,1 +1,5 @@
 # stm32
+
+STM32 A 2/ 3 -> SIM R/T
+STM32 A 9/10 -> GPS R/T
+STM32 B10/11 -> TTL R/X
