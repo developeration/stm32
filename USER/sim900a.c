@@ -198,6 +198,7 @@ u8 SIM900A_GET_LOCATION()
 	//if(sim900a_send_cmd((u8 *)"AT+SAPBR=0,1",(u8 *)"OK",400))return SIM_ERR_F;	
 	//if(sim900a_send_cmd((u8 *)"AT+RESET",(u8 *)"OK",500))	return SIM_ERR_E;
 	//if(sim900a_send_cmd((u8 *)"AT+CIPSHUT",(u8 *)"OK",500))	return SIM_ERR_E;
+	sim900a_send_cmd((u8 *)"AT+SAPBR=0,1",(u8 *)"OK",400);
 	if(sim900a_send_cmd((u8 *)"AT+SAPBR=3,1,\"CONTYPE\",\"GPRS\"",(u8 *)"OK",400))return SIM_ERR_A;	
 	if(sim900a_send_cmd((u8 *)"AT+SAPBR=3,1,\"APN\",\"\"",(u8 *)"OK",400))return SIM_ERR_B;	
 	if(sim900a_send_cmd((u8 *)"AT+SAPBR=1,1",(u8 *)"OK",400))return SIM_ERR_C;	

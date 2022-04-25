@@ -62,7 +62,6 @@ int main(void)
   //SIM900A_GPRS_SEND_DATA	
 	while(1)
 	{
-		
 		//parseGpsBuffer();
 		//printGpsBuffer();
 		res = SIM900A_GET_LOCATION();
