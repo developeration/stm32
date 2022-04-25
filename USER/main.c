@@ -43,11 +43,11 @@ int main(void)
 	u8 res=1;
 	delay_init();	    	 //延时函数初始化
 	NVIC_Configuration(); 	 //设置NVIC中断分组2:2位抢占优先级，2位响应优先级 	LED_Init();			     //LED端口初始化
-	USART1_Init(115200);	//初始化串口1
-	USART2_Init(9600);	 //初始化串口2
+	//USART1_Init(115200);	//初始化串口1 GPS
+	USART2_Init(9600);	 //初始化串口2 SIM
 	USART3_Init(9600);	//LOG信息
-	clrGPSStruct();
-	UART3SendString("系统初始化完毕\r\n",strlen("系统初始化完毕\r\n"));
+	//clrGPSStruct();
+	UART3SendString((u8 *)"System Init Finished\r\n",strlen("System Init Finished\r\n"));
 	res=1;
 	while(res)
 	{
@@ -69,15 +69,15 @@ int main(void)
 		if(res){
 			continue;
 		}
-		UART3SendString(SIM_Location,1024);
+		//UART3SendString(SIM_Location,1024);
 		res = SIM900A_CONNECT_SERVER_SEND_INFOR((u8*)"win-ad.eastus.cloudapp.azure.com",(u8*)"9000");	
 		if(res){
 			continue;
 		}
 		UART3SendString(SIM_Location,1024);
 		SIM900A_GPRS_SEND_DATA(SIM_Location);
-		UART3SendString(SIM_Location,1024);
-		delay_ms(10000);
+		//UART3SendString(SIM_Location,1024);
+		delay_ms(15000);
 		
 	}
 }
