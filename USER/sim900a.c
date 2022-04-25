@@ -11,10 +11,14 @@
 //********************************************************************************
 //无
 //////////////////////////////////////////////////////////////////////////////////
+u8 SIM_Location[USART2_SIM_MAX_RECV_LEN] ;
+
+
 u8 SIM900_CSQ[3];
-u8 dtbuf[50];   								//打印缓存器	
+u8 dtbuf[150];   								//打印缓存器	
 u8 Flag_Rec_Message=0;
 //////////////////////////////////////////////////////////////////////////////////
+
 //usmart支持部分 
 //将收到的AT指令应答数据返回给电脑串口
 //mode:0,不清零USART2_RX_STA;
@@ -93,7 +97,7 @@ u8 sim900a_work_test(void)
 			 }
 			 return SIM_CREG_FAIL;	//等待附着到网络
 		}
-	}	
+	}
 	return SIM_OK;
 }
 u8 GSM_Dect(void)
@@ -114,6 +118,10 @@ u8 GSM_Dect(void)
 		case SIM_CREG_FAIL:
 			UART3SendString("注册网络中。。。\r\n",strlen("注册网络中。。。\r\n"));	
 			UART3SendString("当前信号值：",strlen("当前信号值："));	UART3SendString(SIM900_CSQ,2);UART3SendString("\r\n",2);
+			break;		
+		
+		case SIM_ERR_E:
+			UART3SendString("ERROR E\r\n",strlen("ERROR E\r\n"));	
 			break;		
 		default:
 			break;
@@ -174,3 +182,62 @@ u8 SIM900A_GPRS_SEND_DATA(u8 *temp_data)
 	 //UART3SendString("数据发送成功",strlen("数据发送成功"));	UART3SendString("\r\n",2);
 	 return 0;
 }	
+
+
+u8 SIM900A_GET_LOCATION()
+{
+	//if(sim900a_send_cmd("AT+CIPGSMLOC=1","OK",100))	 return 1;
+	/*
+	u8 res=0; 
+	//u8 *cmd = (u8 *)"AT+CIPGSMLOC?";
+	u8 *cmd = (u8 *)"AT+CIPGSMLOC=1,1";
+	u8 *ack = (u8 *)"OK";
+	u16 waittime = 500;
+	USART2_RX_STA=0;USART2_RX_REC_ATCOMMAD=1;
+	*/
+	//if(sim900a_send_cmd((u8 *)"AT+SAPBR=0,1",(u8 *)"OK",400))return SIM_ERR_F;	
+	//if(sim900a_send_cmd((u8 *)"AT+RESET",(u8 *)"OK",500))	return SIM_ERR_E;
+	//if(sim900a_send_cmd((u8 *)"AT+CIPSHUT",(u8 *)"OK",500))	return SIM_ERR_E;
+	if(sim900a_send_cmd((u8 *)"AT+SAPBR=3,1,\"CONTYPE\",\"GPRS\"",(u8 *)"OK",400))return SIM_ERR_A;	
+	if(sim900a_send_cmd((u8 *)"AT+SAPBR=3,1,\"APN\",\"\"",(u8 *)"OK",400))return SIM_ERR_B;	
+	if(sim900a_send_cmd((u8 *)"AT+SAPBR=1,1",(u8 *)"OK",400))return SIM_ERR_C;	
+	if(sim900a_send_cmd((u8 *)"AT+SAPBR=2,1",(u8 *)"OK",400))
+	{
+		sim900a_send_cmd((u8 *)"AT+SAPBR=0,1",(u8 *)"OK",400);
+		return SIM_ERR_D;	
+	}
+	if(sim900a_send_cmd((u8 *)"AT+CIPGSMLOC=1,1",(u8 *)"OK",400))
+	{
+		sim900a_send_cmd((u8 *)"AT+SAPBR=0,1",(u8 *)"OK",400);
+		return SIM_ERR_E;
+	}
+	memcpy(SIM_Location,USART2_RX_BUF,USART2_SIM_MAX_RECV_LEN);
+	/*if((u32)cmd<=0XFF)
+	{
+		while(DMA1_Channel7->CNDTR!=0);	//等待通道7传输完成   
+		USART2->DR=(u32)cmd;
+	}else u2_printf("%s\r\n",cmd);//发送命令
+	if(ack&&waittime)		//需要等待应答
+	{
+		while(--waittime)	//等待倒计时
+		{
+			delay_ms(10);
+			if(USART2_RX_STA&0X8000)//接收到期待的应答结果
+			{
+				if(!sim900a_check_cmd(ack)){
+					memcpy(SIM_Location,USART2_RX_BUF,USART2_SIM_MAX_RECV_LEN);
+					USART2_RX_STA=0;
+					break;//得到有效数据 
+				}				
+				
+			} 
+		}
+		if(waittime==0)res=1; 
+	}
+	USART2_RX_STA=0;USART2_RX_REC_ATCOMMAD=0;
+	*/
+	if(sim900a_send_cmd((u8 *)"AT+SAPBR=0,1",(u8 *)"OK",400))return SIM_ERR_F;	
+	
+	return SIM_OK;
+}
+

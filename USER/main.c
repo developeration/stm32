@@ -55,20 +55,30 @@ int main(void)
 		delay_ms(2000);
 	}
   
+	//res = SIM900A_GET_LOCATION();
+	//UART3SendString(SIM_Location,1024);
+	//res = SIM900A_CONNECT_SERVER_SEND_INFOR((u8*)"win-ad.eastus.cloudapp.azure.com",(u8*)"9000");
+	//SIM900A_CONNECT_SERVER_SEND_INFOR
+  //SIM900A_GPRS_SEND_DATA	
 	while(1)
 	{
-		parseGpsBuffer();
-		printGpsBuffer();
 		
-		/*res=1;
-		while(res)
-		{
-			res = SIM900A_CONNECT_SERVER_SEND_INFOR((u8*)"win-ad.eastus.cloudapp.azure.com",(u8*)"9000");	
-			delay_ms(2000);			
+		//parseGpsBuffer();
+		//printGpsBuffer();
+		res = SIM900A_GET_LOCATION();
+		if(res){
+			continue;
 		}
-		SIM900A_GPRS_SEND_DATA((u8*)"Great");
+		UART3SendString(SIM_Location,1024);
+		res = SIM900A_CONNECT_SERVER_SEND_INFOR((u8*)"win-ad.eastus.cloudapp.azure.com",(u8*)"9000");	
+		if(res){
+			continue;
+		}
+		UART3SendString(SIM_Location,1024);
+		SIM900A_GPRS_SEND_DATA(SIM_Location);
+		UART3SendString(SIM_Location,1024);
 		delay_ms(10000);
-		*/
+		
 	}
 }
  
