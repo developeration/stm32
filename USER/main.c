@@ -31,9 +31,10 @@
 #include "sim900a.h"
 #include "led.h"
 
-void errorLog(int num);
+
 void parseGpsBuffer(void);
 void printGpsBuffer(void);
+void flashLed(int num);
 /**
   * @brief  Main program.
   * @param  None
@@ -44,22 +45,16 @@ int main(void)
 	u8 res=1;
 	delay_init();	    	 //延时函数初始化
 	NVIC_Configuration(); 	 //设置NVIC中断分组2:2位抢占优先级，2位响应优先级 	LED_Init();			     //LED端口初始化
-	//USART1_Init(115200);	//初始化串口1 GPS
+	USART1_Init(9600);	//初始化串口1 GPS
 	USART2_Init(9600);	 //初始化串口2 SIM
 	USART3_Init(9600);	//LOG信息
 	LED_GPIO_Config();   // LED 指示灯
-	//clrGPSStruct();
+	clrGPSStruct();
 	UART3SendString((u8 *)"System Init Finished\r\n",strlen("System Init Finished\r\n"));
 	res=1;
 	while(res)
 	{
-		LED(ON);
-		delay_ms(100);
-		LED(OFF);
-		delay_ms(100);
-		LED(ON);
-		delay_ms(100);
-		LED(OFF);
+		flashLed(2);
 		res = GSM_Dect();
 		delay_ms(2000);
 	}
@@ -74,21 +69,12 @@ int main(void)
 		LED(ON);
 		//parseGpsBuffer();
 		//printGpsBuffer();
+		
 		res = SIM900A_GET_LOCATION();
 		if(res){
 			LED(OFF);
 			delay_ms(100);
-			LED(ON);
-			delay_ms(100);
-			LED(OFF);
-			delay_ms(100);
-			LED(ON);
-			delay_ms(100);
-			LED(OFF);
-			delay_ms(100);
-			LED(ON);
-			delay_ms(100);
-			LED(OFF);
+			flashLed(3);
 			continue;
 		}
 		//UART3SendString(SIM_Location,1024);
@@ -96,44 +82,45 @@ int main(void)
 		if(res){
 			LED(OFF);
 			delay_ms(100);
-			LED(ON);
-			delay_ms(100);
-			LED(OFF);
-			delay_ms(100);
-			LED(ON);
-			delay_ms(100);
-			LED(OFF);
-			delay_ms(100);
-			LED(ON);
-			delay_ms(100);
-			LED(OFF);
-			delay_ms(100);
-			LED(ON);
-			delay_ms(100);
-			LED(OFF);
+			flashLed(4);
 			continue;
 		}
 		UART3SendString(SIM_Location,1024);
 		SIM900A_GPRS_SEND_DATA(SIM_Location);
 		//UART3SendString(SIM_Location,1024);
-		LED(OFF);
 		
 		delay_ms(5000);
 		delay_ms(5000);
-		delay_ms(5000);
+		
+		if (Save_Data.isGetData)
+		{
+			res = SIM900A_CONNECT_SERVER_SEND_INFOR((u8*)"win-ad.eastus.cloudapp.azure.com",(u8*)"9000");	
+			if(res){
+				LED(OFF);
+				delay_ms(100);
+				flashLed(4);
+				continue;
+			}
+			UART3SendString((u8*)Save_Data.GPS_Buffer,80);
+			SIM900A_GPRS_SEND_DATA((u8*)Save_Data.GPS_Buffer);
+			
+			clrGPSStruct();
+		}
+		
+		LED(OFF);
 		delay_ms(5000);
 		delay_ms(5000);
 		
 	}
 }
- 
-
-void errorLog(int num)
-{
-	
-	while (1)
+void flashLed(int num){
+	int i = 0;
+	for (i = 0 ; i <= num ; i++)
 	{
-	  	printf("ERROR%d\r\n",num);
+		LED(ON);
+		delay_ms(100);
+		LED(OFF);
+		delay_ms(100);
 	}
 }
 
@@ -154,7 +141,7 @@ void parseGpsBuffer()
 			if (i == 0)
 			{
 				if ((subString = strstr(Save_Data.GPS_Buffer, ",")) == NULL)
-					errorLog(1);	//½âÎö´íÎó
+					UART3SendString((u8*)"GPS Error 01\r\n",strlen("GPS Error 01\r\n"));
 			}
 			else
 			{
@@ -184,7 +171,7 @@ void parseGpsBuffer()
 				}
 				else
 				{
-					errorLog(2);	//½âÎö´íÎó
+					UART3SendString((u8*)"GPS Error 02\r\n",strlen("GPS Error 02\r\n"));
 				}
 			}
 
