@@ -29,6 +29,7 @@
 #include "usart2.h"
 #include "string.h" 
 #include "sim900a.h"
+#include "led.h"
 
 void errorLog(int num);
 void parseGpsBuffer(void);
@@ -46,11 +47,19 @@ int main(void)
 	//USART1_Init(115200);	//初始化串口1 GPS
 	USART2_Init(9600);	 //初始化串口2 SIM
 	USART3_Init(9600);	//LOG信息
+	LED_GPIO_Config();   // LED 指示灯
 	//clrGPSStruct();
 	UART3SendString((u8 *)"System Init Finished\r\n",strlen("System Init Finished\r\n"));
 	res=1;
 	while(res)
 	{
+		LED(ON);
+		delay_ms(100);
+		LED(OFF);
+		delay_ms(100);
+		LED(ON);
+		delay_ms(100);
+		LED(OFF);
 		res = GSM_Dect();
 		delay_ms(2000);
 	}
@@ -62,20 +71,25 @@ int main(void)
   //SIM900A_GPRS_SEND_DATA	
 	while(1)
 	{
+		LED(ON);
 		//parseGpsBuffer();
 		//printGpsBuffer();
 		res = SIM900A_GET_LOCATION();
 		if(res){
+			LED(OFF);
 			continue;
 		}
 		//UART3SendString(SIM_Location,1024);
 		res = SIM900A_CONNECT_SERVER_SEND_INFOR((u8*)"win-ad.eastus.cloudapp.azure.com",(u8*)"9000");	
 		if(res){
+			LED(OFF);
 			continue;
 		}
 		UART3SendString(SIM_Location,1024);
 		SIM900A_GPRS_SEND_DATA(SIM_Location);
 		//UART3SendString(SIM_Location,1024);
+		LED(OFF);
+		
 		delay_ms(15000);
 		
 	}
