@@ -12,18 +12,29 @@ $listener.start()
 while($true){
     $data = $listener.AcceptTcpClient()
     $stream = $data.GetStream() 
-    $bytes = New-Object System.Byte[] 1024
-    while (($i = $stream.Read($bytes,0,$bytes.Length)) -ne 0){
-        $EncodedText = New-Object System.Text.ASCIIEncoding
-        $data = $EncodedText.GetString($bytes,0, $i)
-        Write-Host $data
+    $reqstr = ""
+    Get-Date
+    try{
+        $bytes = New-Object System.Byte[] 1024
+        while (($i = $stream.Read($bytes,0,$bytes.Length)) -ne 0){
+            $EncodedText = New-Object System.Text.ASCIIEncoding
+            $reqstr = $EncodedText.GetString($bytes,0, $i)
+            Write-Host $reqstr 
+            }
+        }
+    finally{
+        $stream.close()
+        }
 
-        #$data = "+CIPGSMLOC: 0,40.033862,116.263082,2000/01/01,04:53:41"
-        if($data.IndexOf("CIPGSMLOC:") -gt 0 ){
-            $datasplit = $data.Substring(11,$data.Length-11).Split(",")
+    try{
+    #$data = "+CIPGSMLOC: 0,40.033862,116.263082,2000/01/01,04:53:41"
+        if($reqstr.IndexOf("CIPGSMLOC:") -gt 0 ){
+            $datasplit = $reqstr.Substring(11,$reqstr.Length-11).Split(",")
             if($datasplit.Length -eq 5){
-                $latitude = $datasplit[2]
-                $longitude = $datasplit[1]
+                $latitude = $datasplit[1]
+                $longitude = $datasplit[2]
+
+                Write-Host $latitude "~" $longitude
        
 $sql = @"
 DECLARE @latitude nvarchar(50) = '$latitude'
@@ -45,12 +56,11 @@ VALUES
                 $SqlConnection.open()
                 $SqlCmd.ExecuteNonQuery()
                 $SqlConnection.Close()
-
-                
-
-
             }
         }
+    }catch
+    {
+        Write-Host $_
     }
 }
 $listener.stop()

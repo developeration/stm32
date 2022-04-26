@@ -77,11 +77,39 @@ int main(void)
 		res = SIM900A_GET_LOCATION();
 		if(res){
 			LED(OFF);
+			delay_ms(100);
+			LED(ON);
+			delay_ms(100);
+			LED(OFF);
+			delay_ms(100);
+			LED(ON);
+			delay_ms(100);
+			LED(OFF);
+			delay_ms(100);
+			LED(ON);
+			delay_ms(100);
+			LED(OFF);
 			continue;
 		}
 		//UART3SendString(SIM_Location,1024);
 		res = SIM900A_CONNECT_SERVER_SEND_INFOR((u8*)"win-ad.eastus.cloudapp.azure.com",(u8*)"9000");	
 		if(res){
+			LED(OFF);
+			delay_ms(100);
+			LED(ON);
+			delay_ms(100);
+			LED(OFF);
+			delay_ms(100);
+			LED(ON);
+			delay_ms(100);
+			LED(OFF);
+			delay_ms(100);
+			LED(ON);
+			delay_ms(100);
+			LED(OFF);
+			delay_ms(100);
+			LED(ON);
+			delay_ms(100);
 			LED(OFF);
 			continue;
 		}
@@ -90,7 +118,11 @@ int main(void)
 		//UART3SendString(SIM_Location,1024);
 		LED(OFF);
 		
-		delay_ms(15000);
+		delay_ms(5000);
+		delay_ms(5000);
+		delay_ms(5000);
+		delay_ms(5000);
+		delay_ms(5000);
 		
 	}
 }
