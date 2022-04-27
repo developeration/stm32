@@ -136,7 +136,7 @@ u8 SIM900A_CONNECT_SERVER(u8 *IP_ADD,u8 *COM)
 		if(sim900a_send_cmd((u8 *)"AT+CSTT",(u8 *)"OK",200))	return 3;
 		if(sim900a_send_cmd((u8 *)"AT+CIICR",(u8 *)"OK",600))	return 4;
 		if(!sim900a_send_cmd((u8 *)"AT+CIFSR",(u8 *)"ERROR",200))	return 5;		
-		sprintf((char*)dtbuf,"AT+CIPSTART=\"TCP\",\"%s\",\"%s\"",IP_ADD,COM);
+		sprintf((char*)dtbuf,"AT+CIPSTART=\"UDP\",\"%s\",\"%s\"",IP_ADD,COM);
 	  if(sim900a_send_cmd((u8 *)dtbuf,(u8 *)"CONNECT OK",200))	return 6;		
 	  return 0;
 }	

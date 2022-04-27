@@ -66,6 +66,15 @@ void delay_ms(u16 nms)
 	SysTick->VAL =0X00;       //清空计数器	  	    
 } 
 
+void delay_ss(u16 nms)
+{	 		  	  
+	u16 i=0;
+	for (i = 0 ; i <= nms ; i++)
+	{
+		delay_ms(1000); 
+	}		
+} 
+
 
 
 

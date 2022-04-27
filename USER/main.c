@@ -45,18 +45,18 @@ int main(void)
 	u8 res=1;
 	delay_init();	    	 //延时函数初始化
 	NVIC_Configuration(); 	 //设置NVIC中断分组2:2位抢占优先级，2位响应优先级 	LED_Init();			     //LED端口初始化
-	USART1_Init(9600);	//初始化串口1 GPS
+	//USART1_Init(9600);	//初始化串口1 GPS
 	USART2_Init(115200);	 //初始化串口2 SIM
 	USART3_Init(9600);	//LOG信息
 	LED_GPIO_Config();   // LED 指示灯
-	clrGPSStruct();
+	//clrGPSStruct();
 	UART3SendString((u8 *)"System Init Finished\r\n",strlen("System Init Finished\r\n"));
 	res=1;
 	while(res)
 	{
 		flashLed(2);
 		res = GSM_Dect();
-		delay_ms(2000);
+		delay_ss(2);
 	}
   
 	//res = SIM900A_GET_LOCATION();
@@ -69,7 +69,7 @@ int main(void)
 		LED(ON);
 		//parseGpsBuffer();
 		//printGpsBuffer();
-		if (Save_Data.isGetData)
+		/*if (Save_Data.isGetData)
 		{
 			res = SIM900A_CONNECT_SERVER_SEND_INFOR((u8*)"win-ad.eastus.cloudapp.azure.com",(u8*)"9000");	
 			if(res){
@@ -86,17 +86,20 @@ int main(void)
 			delay_ms(5000);
 			delay_ms(5000);
 		}
+		*/
 		
 		
 		res = SIM900A_GET_LOCATION();
 		if(res){
-			flashLed(4);
+			flashLed(5);
+			delay_ss(10);
 			continue;
 		}
 		//UART3SendString(SIM_Location,1024);
 		res = SIM900A_CONNECT_SERVER_SEND_INFOR((u8*)"win-ad.eastus.cloudapp.azure.com",(u8*)"9000");	
 		if(res){
-			flashLed(8);
+			flashLed(10);
+			delay_ss(10);
 			continue;
 		}
 		UART3SendString(SIM_Location,1024);
@@ -106,10 +109,7 @@ int main(void)
 		
 		
 		LED(OFF);
-		delay_ms(5000);
-		delay_ms(5000);
-		delay_ms(5000);
-		delay_ms(5000);
+		delay_ss(30);
 		
 	}
 }
@@ -123,7 +123,7 @@ void flashLed(int num){
 		delay_ms(100);
 	}
 }
-
+/*
 void parseGpsBuffer()
 {
 	char *subString;
@@ -216,4 +216,6 @@ void printGpsBuffer()
 		}
 		
 	}
+	
 }
+*/
