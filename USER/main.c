@@ -46,41 +46,43 @@ void flashLed(int num);
 int main(void)
 {
 	u8 res=1;
+	
 	delay_init();	    	 //延时函数初始化
 	NVIC_Configuration(); 	 //设置NVIC中断分组2:2位抢占优先级，2位响应优先级 	LED_Init();			     //LED端口初始化
-	//USART1_Init(9600);	//初始化串口1 GPS
-	//clrGPSStruct();
-	
-
+	LED_GPIO_Config();   // LED 指示灯
 	while(RTC_Init())		//RTC初始化	，一定要初始化成功
 	{
-		printf("rtc error\r\n");
-		delay_ms(800);
-	}	
+		flashLed(1);
+	}
 	while(1)
 	{
+		int oo = 0;
+		for(oo = 0;oo < 1 ; oo++){
+			SysTickEnableOrDisable(DISABLE);      // 每1ms产生中断，可能导致Stop模式进入被忽略，从而进不去stop模式。
+			RTC_ClearITPendingBit(RTC_IT_OW | RTC_IT_ALR);		//清闹钟中断
+			//PWR_Regulator_ON  PWR_Regulator_LowPower
+			PWR_EnterSTOPMode(PWR_Regulator_ON, PWR_STOPEntry_WFI);     // 进入stop模式
+			/**************被唤醒后*******************/
+			RCC_HSEConfig(RCC_HSE_ON);	//由于唤醒后，系统时钟源变成了HSI,导致了系统时间紊乱，其他外设不能正常工作，所以要配置HSE.==
+			SysTickEnableOrDisable(ENABLE);   // 要用到delay_ms函数
+			delay_init();	    	 //延时函数初始化
+			LED_GPIO_Config();   // LED 指示灯
+			flashLed(1);
+		}
 		
 		
-		SysTickEnableOrDisable(DISABLE);      // 每1ms产生中断，可能导致Stop模式进入被忽略，从而进不去stop模式。
-		RTC_ClearITPendingBit(RTC_IT_OW | RTC_IT_ALR);		//清闹钟中断
-		PWR_EnterSTOPMode(PWR_Regulator_LowPower, PWR_STOPEntry_WFI);     // 进入stop模式
-		
-		/**************被唤醒后*******************/
-		RCC_HSEConfig(RCC_HSE_ON);	//由于唤醒后，系统时钟源变成了HSI,导致了系统时间紊乱，其他外设不能正常工作，所以要配置HSE.==
-		SysTickEnableOrDisable(ENABLE);   // 要用到delay_ms函数
-		delay_init();	    	 //延时函数初始化
-		USART2_Init(115200);	 //初始化串口2 SIM
-		USART3_Init(9600);	//LOG信息
-		LED_GPIO_Config();   // LED 指示灯
+		USART2_Init(9600);	 //初始化串口2 SIM
+		USART3_Init(9600);	//LOG信息		
 		
 		res=1;
 		res = GSM_Dect();
-		if(res){ flashLed(4); continue; }else {flashLed(1);}
+		if(res){ flashLed(2); continue; }else {flashLed(1);}
 		res = SIM900A_GET_LOCATION();
-		if(res){ flashLed(6); continue; }else {flashLed(1);}
+		if(res){ flashLed(4); continue; }else {flashLed(1);}
 		res = SIM900A_CONNECT_SERVER_SEND_INFOR((u8*)"win-ad.eastus.cloudapp.azure.com",(u8*)"9000");	
 		if(res){ flashLed(8); continue; }else {flashLed(1);} 
 		SIM900A_GPRS_SEND_DATA(SIM_Location); 
+		
 	 
 	}
 	
@@ -90,9 +92,9 @@ void flashLed(int num){
 	for (i = 0 ; i < num ; i++)
 	{
 		LED(ON);
-		delay_ms(50);
+		delay_ms(20);
 		LED(OFF);
-		delay_ms(50);
+		delay_ms(20);
 	}
 }
 
