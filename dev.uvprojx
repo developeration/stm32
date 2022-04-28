@@ -438,6 +438,11 @@
               <FileType>1</FileType>
               <FilePath>.\USER\led.c</FilePath>
             </File>
+            <File>
+              <FileName>rtc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\USER\rtc.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

@@ -24,17 +24,20 @@
 #include "stm32f10x_gpio.h"
 #include "stm32f10x_rcc.h"
 #include "stm32f10x_usart.h"
+#include "stm32f10x_rtc.h"
 #include "delay.h"
 #include "usart1.h"
 #include "usart2.h"
 #include "string.h" 
 #include "sim900a.h"
 #include "led.h"
-
+#include "rtc.h"
 
 void parseGpsBuffer(void);
 void printGpsBuffer(void);
 void flashLed(int num);
+
+
 /**
   * @brief  Main program.
   * @param  None
@@ -46,176 +49,50 @@ int main(void)
 	delay_init();	    	 //延时函数初始化
 	NVIC_Configuration(); 	 //设置NVIC中断分组2:2位抢占优先级，2位响应优先级 	LED_Init();			     //LED端口初始化
 	//USART1_Init(9600);	//初始化串口1 GPS
-	USART2_Init(115200);	 //初始化串口2 SIM
-	USART3_Init(9600);	//LOG信息
-	LED_GPIO_Config();   // LED 指示灯
 	//clrGPSStruct();
-	UART3SendString((u8 *)"System Init Finished\r\n",strlen("System Init Finished\r\n"));
-	res=1;
-	while(res)
+	
+
+	while(RTC_Init())		//RTC初始化	，一定要初始化成功
 	{
-		flashLed(2);
-		res = GSM_Dect();
-		delay_ss(2);
-	}
-  
-	//res = SIM900A_GET_LOCATION();
-	//UART3SendString(SIM_Location,1024);
-	//res = SIM900A_CONNECT_SERVER_SEND_INFOR((u8*)"win-ad.eastus.cloudapp.azure.com",(u8*)"9000");
-	//SIM900A_CONNECT_SERVER_SEND_INFOR
-  //SIM900A_GPRS_SEND_DATA	
+		printf("rtc error\r\n");
+		delay_ms(800);
+	}	
 	while(1)
 	{
-		LED(ON);
-		//parseGpsBuffer();
-		//printGpsBuffer();
-		/*if (Save_Data.isGetData)
-		{
-			res = SIM900A_CONNECT_SERVER_SEND_INFOR((u8*)"win-ad.eastus.cloudapp.azure.com",(u8*)"9000");	
-			if(res){
-				flashLed(8);
-				continue;
-			}else{
-				UART3SendString((u8*)Save_Data.GPS_Buffer,80);
-				SIM900A_GPRS_SEND_DATA((u8*)Save_Data.GPS_Buffer);
-			}
-			
-			clrGPSStruct();
-			delay_ms(5000);
-			delay_ms(5000);
-			delay_ms(5000);
-			delay_ms(5000);
-		}
-		*/
 		
 		
+		SysTickEnableOrDisable(DISABLE);      // 每1ms产生中断，可能导致Stop模式进入被忽略，从而进不去stop模式。
+		RTC_ClearITPendingBit(RTC_IT_OW | RTC_IT_ALR);		//清闹钟中断
+		PWR_EnterSTOPMode(PWR_Regulator_LowPower, PWR_STOPEntry_WFI);     // 进入stop模式
+		
+		/**************被唤醒后*******************/
+		RCC_HSEConfig(RCC_HSE_ON);	//由于唤醒后，系统时钟源变成了HSI,导致了系统时间紊乱，其他外设不能正常工作，所以要配置HSE.==
+		SysTickEnableOrDisable(ENABLE);   // 要用到delay_ms函数
+		delay_init();	    	 //延时函数初始化
+		USART2_Init(115200);	 //初始化串口2 SIM
+		USART3_Init(9600);	//LOG信息
+		LED_GPIO_Config();   // LED 指示灯
+		
+		res=1;
+		res = GSM_Dect();
+		if(res){ flashLed(4); continue; }else {flashLed(1);}
 		res = SIM900A_GET_LOCATION();
-		if(res){
-			flashLed(5);
-			delay_ss(10);
-			continue;
-		}
-		//UART3SendString(SIM_Location,1024);
+		if(res){ flashLed(6); continue; }else {flashLed(1);}
 		res = SIM900A_CONNECT_SERVER_SEND_INFOR((u8*)"win-ad.eastus.cloudapp.azure.com",(u8*)"9000");	
-		if(res){
-			flashLed(10);
-			delay_ss(10);
-			continue;
-		}
-		UART3SendString(SIM_Location,1024);
-		SIM900A_GPRS_SEND_DATA(SIM_Location);
-		//UART3SendString(SIM_Location,1024); 
-		
-		
-		
-		LED(OFF);
-		delay_ss(30);
-		
-	}
-}
-void flashLed(int num){
-	int i = 0;
-	for (i = 0 ; i <= num ; i++)
-	{
-		LED(ON);
-		delay_ms(100);
-		LED(OFF);
-		delay_ms(100);
-	}
-}
-/*
-void parseGpsBuffer()
-{
-	char *subString;
-	char *subStringNext;
-	char i = 0;
-	if (Save_Data.isGetData)
-	{
-		Save_Data.isGetData = false;
-		printf("**************\r\n");
-		printf(Save_Data.GPS_Buffer);
-
-		
-		for (i = 0 ; i <= 6 ; i++)
-		{
-			if (i == 0)
-			{
-				if ((subString = strstr(Save_Data.GPS_Buffer, ",")) == NULL)
-					UART3SendString((u8*)"GPS Error 01\r\n",strlen("GPS Error 01\r\n"));
-			}
-			else
-			{
-				subString++;
-				if ((subStringNext = strstr(subString, ",")) != NULL)
-				{
-					char usefullBuffer[2]; 
-					switch(i)
-					{
-						case 1:memcpy(Save_Data.UTCTime, subString, subStringNext - subString);break;	//»ñÈ¡UTCÊ±¼ä
-						case 2:memcpy(usefullBuffer, subString, subStringNext - subString);break;	//»ñÈ¡UTCÊ±¼ä
-						case 3:memcpy(Save_Data.latitude, subString, subStringNext - subString);break;	//»ñÈ¡Î³¶ÈÐÅÏ¢
-						case 4:memcpy(Save_Data.N_S, subString, subStringNext - subString);break;	//»ñÈ¡N/S
-						case 5:memcpy(Save_Data.longitude, subString, subStringNext - subString);break;	//»ñÈ¡¾­¶ÈÐÅÏ¢
-						case 6:memcpy(Save_Data.E_W, subString, subStringNext - subString);break;	//»ñÈ¡E/W
-
-						default:break;
-					}
-
-					subString = subStringNext;
-					Save_Data.isParseData = true;
-					if(usefullBuffer[0] == 'A')
-						Save_Data.isUsefull = true;
-					else if(usefullBuffer[0] == 'V')
-						Save_Data.isUsefull = false;
-
-				}
-				else
-				{
-					UART3SendString((u8*)"GPS Error 02\r\n",strlen("GPS Error 02\r\n"));
-				}
-			}
-
-
-		}
-	}
-}
-
-void printGpsBuffer()
-{
-	if (Save_Data.isParseData)
-	{
-		Save_Data.isParseData = false;
-		
-		printf("Save_Data.UTCTime = ");
-		printf(Save_Data.UTCTime);
-		printf("\r\n");
-
-		if(Save_Data.isUsefull)
-		{
-			Save_Data.isUsefull = false;
-			printf("Save_Data.latitude = ");
-			printf(Save_Data.latitude);
-			printf("\r\n");
-
-
-			printf("Save_Data.N_S = ");
-			printf(Save_Data.N_S);
-			printf("\r\n");
-
-			printf("Save_Data.longitude = ");
-			printf(Save_Data.longitude);
-			printf("\r\n");
-
-			printf("Save_Data.E_W = ");
-			printf(Save_Data.E_W);
-			printf("\r\n");
-		}
-		else
-		{
-			printf("GPS DATA is not usefull!\r\n");
-		}
-		
+		if(res){ flashLed(8); continue; }else {flashLed(1);} 
+		SIM900A_GPRS_SEND_DATA(SIM_Location); 
+	 
 	}
 	
 }
-*/
+void flashLed(int num){
+	int i = 0;
+	for (i = 0 ; i < num ; i++)
+	{
+		LED(ON);
+		delay_ms(50);
+		LED(OFF);
+		delay_ms(50);
+	}
+}
+
