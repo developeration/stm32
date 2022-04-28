@@ -57,7 +57,24 @@ int main(void)
 	while(1)
 	{
 		int oo = 0;
-		for(oo = 0;oo < 6 ; oo++){
+		delay_init();	    	 //延时函数初始化
+		LED_GPIO_Config();   // LED 指示灯 
+		USART2_Init(9600);	 //初始化串口2 SIM
+		USART3_Init(9600);	//LOG信息		
+		
+		res=1;
+		flashLed(1);
+		res = GSM_Dect();
+		if(res){ flashLed(2); continue; }else {flashLed(1);}
+		res = SIM900A_GET_LOCATION();
+		if(res){ flashLed(4); continue; }else {flashLed(1);}
+		res = SIM900A_CONNECT_SERVER_SEND_INFOR((u8*)"win-ad.eastus.cloudapp.azure.com",(u8*)"9000");	
+		if(res){ flashLed(8); continue; }else {flashLed(1);} 
+		SIM900A_GPRS_SEND_DATA(SIM_Location); 
+		flashLed(1);
+		
+		
+		for(oo = 0;oo < 5 ; oo++){
 			SysTickEnableOrDisable(DISABLE);      // 每1ms产生中断，可能导致Stop模式进入被忽略，从而进不去stop模式。
 			RTC_ClearITPendingBit(RTC_IT_OW | RTC_IT_ALR);		//清闹钟中断
 			//PWR_Regulator_ON  PWR_Regulator_LowPower
@@ -71,18 +88,7 @@ int main(void)
 		}
 		
 		
-		USART2_Init(9600);	 //初始化串口2 SIM
-		USART3_Init(9600);	//LOG信息		
 		
-		res=1;
-		res = GSM_Dect();
-		if(res){ flashLed(2); continue; }else {flashLed(1);}
-		res = SIM900A_GET_LOCATION();
-		if(res){ flashLed(4); continue; }else {flashLed(1);}
-		res = SIM900A_CONNECT_SERVER_SEND_INFOR((u8*)"win-ad.eastus.cloudapp.azure.com",(u8*)"9000");	
-		if(res){ flashLed(8); continue; }else {flashLed(1);} 
-		SIM900A_GPRS_SEND_DATA(SIM_Location); 
-		flashLed(1);
 	 
 	}
 	
