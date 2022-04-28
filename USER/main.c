@@ -57,7 +57,7 @@ int main(void)
 	while(1)
 	{
 		int oo = 0;
-		for(oo = 0;oo < 1 ; oo++){
+		for(oo = 0;oo < 6 ; oo++){
 			SysTickEnableOrDisable(DISABLE);      // 每1ms产生中断，可能导致Stop模式进入被忽略，从而进不去stop模式。
 			RTC_ClearITPendingBit(RTC_IT_OW | RTC_IT_ALR);		//清闹钟中断
 			//PWR_Regulator_ON  PWR_Regulator_LowPower
@@ -82,7 +82,7 @@ int main(void)
 		res = SIM900A_CONNECT_SERVER_SEND_INFOR((u8*)"win-ad.eastus.cloudapp.azure.com",(u8*)"9000");	
 		if(res){ flashLed(8); continue; }else {flashLed(1);} 
 		SIM900A_GPRS_SEND_DATA(SIM_Location); 
-		
+		flashLed(1);
 	 
 	}
 	
