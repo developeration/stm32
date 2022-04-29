@@ -33,7 +33,7 @@
 #include "led.h"
 #include "rtc.h"
 
-void flashLed(int num);
+
 
 
 /**
@@ -45,26 +45,26 @@ int main(void)
 {
 	u8 res=1;
 	NVIC_Configuration(); 	 //设置NVIC中断分组2:2位抢占优先级，2位响应优先级 	LED_Init();			     //LED端口初始化
-	delay_init();	    	 //延时函数初始化
+	Delay_Init();	    	 //延时函数初始化
 	LED_GPIO_Config();   // LED 指示灯
 	
-	while(RTC_Init()){flashLed(2);delay_ms(2000);}		//RTC初始化	，一定要初始化成功
+	while(RTC_Init()){FlashLedFail(2);Delay_Ms(2000);}		//RTC初始化	，一定要初始化成功
 
 	
 	while(1)
 	{
 		int oo = 0;
-		USART2_Init(9600);	 //初始化串口2 SIM
+		USART2_Init(115200);	 //初始化串口2 SIM
 		USART3_Init(9600);	//LOG信息	
 		res=1;
 		res = GSM_Dect();
-		if(res){ flashLed(4); delay_ms(2000);continue; }else {flashLed(1);}
+		if(res){ FlashLedFail(4); Delay_Ms(2000);continue; }else {FlashLedOK(1);}
 		res = SIM900A_GET_LOCATION();
-		if(res){ flashLed(6); delay_ms(2000);continue; }else {flashLed(1);}
+		if(res){ FlashLedFail(6); Delay_Ms(2000);continue; }else {FlashLedOK(1);}
 		res = SIM900A_CONNECT_SERVER_SEND_INFOR((u8*)"win-ad.eastus.cloudapp.azure.com",(u8*)"9000");	
-		if(res){ flashLed(8); delay_ms(2000);continue; }else {flashLed(1);} 
+		if(res){ FlashLedFail(8); Delay_Ms(2000);continue; }else {FlashLedOK(1);} 
 		SIM900A_GPRS_SEND_DATA(SIM_Location); 
-		flashLed(1);
+		FlashLedOK(1);
 		
 		for(oo = 0;oo < 6 ; oo++){ 
 			SysTickEnableOrDisable(DISABLE);      // 每1ms产生中断，可能导致Stop模式进入被忽略，从而进不去stop模式。
@@ -75,24 +75,13 @@ int main(void)
 			RCC_HSEConfig(RCC_HSE_ON);	//由于唤醒后，系统时钟源变成了HSI,导致了系统时间紊乱，其他外设不能正常工作，所以要配置HSE.==
 			SystemInit();
 			SysTickEnableOrDisable(ENABLE);   // 要用到delay_ms函数
-			delay_init();	    	 //延时函数初始化
+			Delay_Init();	    	 //延时函数初始化
 			LED_GPIO_Config();   // LED 指示灯 
-			flashLed(1);
+			FlashLedOK(1);
 		}
-		
-		
 	 
 	}
 	
 }
-void flashLed(int num){
-	int i = 0;
-	for (i = 0 ; i < num ; i++)
-	{
-		LED(ON);
-		delay_ms(150);
-		LED(OFF);
-		delay_ms(150);
-	}
-}
+
 

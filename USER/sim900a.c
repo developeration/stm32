@@ -67,7 +67,7 @@ u8 sim900a_send_cmd(u8 *cmd,u8 *ack,u16 waittime)
 	{
 		while(--waittime)	//等待倒计时
 		{
-			delay_ms(10);
+			Delay_Ms(10);
 			if(USART2_RX_STA&0X8000)//接收到期待的应答结果
 			{
 				if(sim900a_check_cmd(ack))break;//得到有效数据 

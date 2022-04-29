@@ -19,7 +19,7 @@ u8 RTC_Init(void)
 	while (RCC_GetFlagStatus(RCC_FLAG_LSERDY) == RESET)	//检查指定的RCC标志位设置与否,等待低速晶振就绪
 	{
 		temp++;
-		delay_ms(10);
+		Delay_Ms(10);
 	}
 	if (temp >= 250)return 1;//初始化时钟失败,晶振有问题	   
 
