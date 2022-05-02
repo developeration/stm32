@@ -35,6 +35,10 @@ extern u8 GSM_Dect(void);
 extern u8 SIM900A_CONNECT_SERVER_SEND_INFOR(u8 *IP_ADD,u8 *COM);
 extern u8 SIM900A_GPRS_SEND_DATA(u8 *temp_data);
 extern u8 SIM900A_GET_LOCATION(void);
+extern void CAT4G_POWER_Config(void);
+	
+
+	
 #endif
 
 
