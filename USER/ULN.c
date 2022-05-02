@@ -1,6 +1,6 @@
 #include "ULN.h"
 
-void GPIO_Config(void)
+void ULN_GPIO_Config(void)
 {		
 		/*????GPIO_InitTypeDef??????*/
 		GPIO_InitTypeDef GPIO_InitStructure;
@@ -38,3 +38,24 @@ void GPIO_Config(void)
     IN3_LOW;
     IN4_LOW;		
 }
+
+/*
+ULN_GPIO_Config();
+	u16 DelayTime = 3;
+	while(1){
+		
+		 
+		IN1_HIGH;
+		Delay_Ms(DelayTime);
+		IN1_LOW;
+		IN2_HIGH;
+		Delay_Ms(DelayTime);
+		IN2_LOW;
+		IN3_HIGH;
+		Delay_Ms(DelayTime);
+		IN3_LOW;
+		IN4_HIGH;
+		Delay_Ms(DelayTime);
+		IN4_LOW; 
+	}
+*/

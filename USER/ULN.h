@@ -1,30 +1,30 @@
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __STM32F10x_MA_LED
-#define __STM32F10x_MA_LED
+#ifndef __STM32F10x_MA_ULN
+#define __STM32F10x_MA_ULN
 
 #include "stm32f10x.h"
 
-void GPIO_Config(void);
+void ULN_GPIO_Config(void);
 
 //IN1-PA4
 #define IN1_GPIO_PORT     GPIOA
 #define IN1_GPIO_CLK      RCC_APB2Periph_GPIOA
-#define IN1_GPIO_PIN      GPIO_Pin_1
+#define IN1_GPIO_PIN      GPIO_Pin_4
 
 //IN2-PA5
 #define IN2_GPIO_PORT     GPIOA
 #define IN2_GPIO_CLK      RCC_APB2Periph_GPIOA
-#define IN2_GPIO_PIN      GPIO_Pin_2
+#define IN2_GPIO_PIN      GPIO_Pin_5
 
 //IN3-PA6
 #define IN3_GPIO_PORT     GPIOA
 #define IN3_GPIO_CLK      RCC_APB2Periph_GPIOA
-#define IN3_GPIO_PIN      GPIO_Pin_3
+#define IN3_GPIO_PIN      GPIO_Pin_6
 
 //IN1-PA7
 #define IN4_GPIO_PORT     GPIOA
 #define IN4_GPIO_CLK      RCC_APB2Periph_GPIOA
-#define IN4_GPIO_PIN      GPIO_Pin_4
+#define IN4_GPIO_PIN      GPIO_Pin_7
 
 
 /* ????????????IO */
