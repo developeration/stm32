@@ -45,7 +45,18 @@
 ***/
 int main(void)
 {
-
+	u8 res=1;
+	NVIC_Configuration(); 	 //设置NVIC中断分组2:2位抢占优先级，2位响应优先级 	LED_Init();			     //LED端口初始化
+	Delay_Init();	    	 //延时函数初始化
+	LED_GPIO_Config();   // LED 指示灯
+	while(1){
+		
+		FlashLedOK(1);
+		
+		Delay_Ms(2000); 
+	}
+	
+/*
 	u8 res=1;
 	NVIC_Configuration(); 	 //设置NVIC中断分组2:2位抢占优先级，2位响应优先级 	LED_Init();			     //LED端口初始化
 	Delay_Init();	    	 //延时函数初始化
@@ -90,6 +101,7 @@ int main(void)
 		}
 	 
 	}
+	*/
 	
 }
 
