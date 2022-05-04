@@ -84,7 +84,7 @@ int main(void)
 			Delay_Init();	    	 //延时函数初始化
 			LED_GPIO_Config();   // LED 指示灯 
 			FlashLedOK(1);
-			Delay_Ms(1000);
+			//Delay_Ms(1000);
 		}
 	 
 	}
