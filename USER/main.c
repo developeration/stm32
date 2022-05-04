@@ -70,9 +70,9 @@ int main(void)
 		if(res){ FlashLedFail(8); Delay_Ms(2000);continue; }else {FlashLedOK(1);} 
 		SIM900A_GPRS_SEND_DATA(SIM_Location); 
 		FlashLedOK(1);
-		
+		CAT4GPOWEROFF();
 		for(oo = 0;oo < 12 ; oo++){ 
-			CAT4GPOWEROFF();
+			
 			SysTickEnableOrDisable(DISABLE);      // 每1ms产生中断，可能导致Stop模式进入被忽略，从而进不去stop模式。
 			RTC_ClearITPendingBit(RTC_IT_OW | RTC_IT_ALR);		//清闹钟中断
 			//PWR_Regulator_ON  PWR_Regulator_LowPower
@@ -81,8 +81,6 @@ int main(void)
 			RCC_HSEConfig(RCC_HSE_ON);	//由于唤醒后，系统时钟源变成了HSI,导致了系统时间紊乱，其他外设不能正常工作，所以要配置HSE.==
 			SystemInit();
 			SysTickEnableOrDisable(ENABLE);   // 要用到delay_ms函数
-			CAT4G_POWER_Config();
-		    CAT4GPOWERON();
 			Delay_Init();	    	 //延时函数初始化
 			LED_GPIO_Config();   // LED 指示灯 
 			FlashLedOK(1);
