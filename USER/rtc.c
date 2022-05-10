@@ -36,7 +36,7 @@ u8 RTC_Init(void)
 	RTC_SetPrescaler(32767); //设置RTC预分频的值
 	RTC_SetCounter(0);       // 这里的设置，每设置一次就要等待写操作完成 这是个大坑啊，坑了我将近一天的时间
 	RTC_WaitForLastTask();	 //等待最近一次对RTC寄存器的写操作完成	
-	RTC_SetAlarm(9);         // 设置闹钟的时间要加1哦,也就是说现在是3S
+	RTC_SetAlarm(14);         // 设置闹钟的时间要加1哦,也就是说现在是3S
 	RTC_WaitForLastTask();	//等待最近一次对RTC寄存器的写操作完成	
 	RTC_ExitConfigMode();   //退出配置模式  
 	RTC_NVIC_Config();      //RCT中断分组设置		    				     
@@ -84,7 +84,7 @@ void RTCAlarm_IRQHandler(void)
 	{
 		RTC_SetCounter(0);	    // 清除RTC计数器，从新开始计数
 		RTC_WaitForLastTask();
-		RTC_SetAlarm(9);	    // 设置闹钟 设置闹钟的时间要加1哦,,也就是说现在是3S
+		RTC_SetAlarm(14);	    // 设置闹钟 设置闹钟的时间要加1哦,,也就是说现在是3S
 		RTC_WaitForLastTask();
 	}
 

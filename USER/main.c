@@ -79,7 +79,7 @@ int main(void)
 		SIM900A_GPRS_SEND_DATA(SIM_Location); 
 		FlashLedOK(1);
 		CAT4GPOWEROFF();
-		for(oo = 0;oo < 15 ; oo++){ 
+		for(oo = 0;oo < 8 ; oo++){ 
 			SystemSleep();
 			FlashLedOK(1);
 		}
