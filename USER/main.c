@@ -69,14 +69,17 @@ int main(void)
 		}
 		
 		if(res){ FlashLedFail(2); CAT4GPOWEROFF();SystemSleep();continue; }else {FlashLedOK(1);}
-		res = SIM900A_GET_LOCATION();
+		for(oo=0;oo < 3;oo++){
+			res = SIM900A_GET_LOCATION();
+			Delay_Ms(1000);
+		}
 		if(res){ FlashLedFail(4); Delay_Ms(2000);continue; }else {FlashLedOK(1);}
 		res = SIM900A_CONNECT_SERVER_SEND_INFOR((u8*)"win-ad.eastus.cloudapp.azure.com",(u8*)"9000");	
 		if(res){ FlashLedFail(8); Delay_Ms(2000);continue; }else {FlashLedOK(1);} 
 		SIM900A_GPRS_SEND_DATA(SIM_Location); 
 		FlashLedOK(1);
 		CAT4GPOWEROFF();
-		for(oo = 0;oo < 12 ; oo++){ 
+		for(oo = 0;oo < 15 ; oo++){ 
 			SystemSleep();
 			FlashLedOK(1);
 		}
