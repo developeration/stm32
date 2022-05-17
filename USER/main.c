@@ -38,6 +38,7 @@
 #define CAT4GPOWERON()	GPIO_SetBits(GPIOB,GPIO_Pin_8)
 #define CAT4GPOWEROFF()	GPIO_ResetBits(GPIOB,GPIO_Pin_8)
 void SystemSleep(void);
+void SystemPrepareSleep(void);
 /**
   * @brief  Main program.
   * @param  None
@@ -49,7 +50,7 @@ int main(void)
 	u8 res=1;
 	NVIC_Configuration(); 	 //设置NVIC中断分组2:2位抢占优先级，2位响应优先级 	LED_Init();			     //LED端口初始化
 	Delay_Init();	    	 //延时函数初始化
-	LED_GPIO_Config();   // LED 指示灯
+	LED_GPIO_Init();   // LED 指示灯
 	
 	while(RTC_Init()){FlashLedFail(1);Delay_Ms(2000);}		//RTC初始化	，一定要初始化成功
 
@@ -67,14 +68,14 @@ int main(void)
 			res = GSM_Dect();
 			if(res){ Delay_Ms(1000);} else{ break;}
 		}
-		if(res){ FlashLedFail(2); CAT4GPOWEROFF();SystemSleep();continue; }else {FlashLedOK(1);}
+		if(res){ FlashLedFail(2); SystemPrepareSleep();SystemSleep();continue; }else {FlashLedOK(1);}
 		res = SIM900A_GET_LOCATION();
 		if(res){ FlashLedFail(4); Delay_Ms(1000);continue; }else {FlashLedOK(1);}
 		res = SIM900A_CONNECT_SERVER_SEND_INFOR((u8*)"wix.eastus.cloudapp.azure.com",(u8*)"9000");	
 		if(res){ FlashLedFail(8); Delay_Ms(1000);continue; }else {FlashLedOK(1);} 
 		SIM900A_GPRS_SEND_DATA(SIM_Location); 
 		FlashLedOK(1);
-		CAT4GPOWEROFF();
+		SystemPrepareSleep();
 		for(oo = 0;oo < 12 ; oo++){ 
 			SystemSleep();
 			FlashLedOK(1);
@@ -83,8 +84,13 @@ int main(void)
 	}
 	
 }
-
+void SystemPrepareSleep(void){
+	CAT4GPOWEROFF();
+	USART3_Disable();
+	USART2_Disable();
+}
 void SystemSleep(void){
+	LED_GPIO_Disable();
 	SysTickEnableOrDisable(DISABLE);      // 每1ms产生中断，可能导致Stop模式进入被忽略，从而进不去stop模式。
 	RTC_ClearITPendingBit(RTC_IT_OW | RTC_IT_ALR);		//清闹钟中断
 	//PWR_Regulator_ON  PWR_Regulator_LowPower
@@ -94,5 +100,5 @@ void SystemSleep(void){
 	SystemInit();
 	SysTickEnableOrDisable(ENABLE);   // 要用到delay_ms函数
 	Delay_Init();	    	 //延时函数初始化
-	LED_GPIO_Config();   // LED 指示灯 
+	LED_GPIO_Init();   // LED 指示灯 
 }

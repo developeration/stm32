@@ -1,6 +1,6 @@
 #include "led.h"
 
-void LED_GPIO_Config(void)
+void LED_GPIO_Init(void)
 {
 	GPIO_InitTypeDef GPIO_InitStructure;
 	
@@ -40,4 +40,16 @@ void FlashLedFail(int num){
 		LEDFAIL(OFF);
 		Delay_Ms(150);
 	}
+}
+void LED_GPIO_Disable(void)
+{
+	GPIO_InitTypeDef GPIO_InitStructure;
+	
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_12 | GPIO_Pin_14 ;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_Init(GPIOB,&GPIO_InitStructure);
+	
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB,DISABLE);
+	
 }

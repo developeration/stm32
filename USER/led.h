@@ -16,10 +16,12 @@
 	GPIO_SetBits(GPIOB,GPIO_Pin_14); \
 else \
 	GPIO_ResetBits(GPIOB,GPIO_Pin_14)
-void LED_GPIO_Config(void);
+void LED_GPIO_Init(void);
 
 
 void FlashLedOK(int num);
 void FlashLedFail(int num);
+void LED_GPIO_Disable(void);
+
 #endif /* __STM32F10x_CONF_H */
 

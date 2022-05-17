@@ -1,4 +1,4 @@
-﻿#ifndef __USART2_H
+#ifndef __USART2_H
 #define __USART2_H	 
 #include "sys.h"  
 //////////////////////////////////////////////////////////////////////////////////	 
@@ -36,6 +36,9 @@ void u3_printf(char* fmt,...)  ;
 void USART3_Init(u32 bound);
 void UART3SendString(u8 *cmd,u16 len);
 void UART3SendByte(unsigned char SendData);
+
+void USART2_Disable(void);
+void USART3_Disable(void);
 #endif
 
 

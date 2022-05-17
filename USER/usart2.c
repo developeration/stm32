@@ -263,10 +263,48 @@ void UART3SendString(u8 *cmd,u16 len)
 	}
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////// 									 
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////// 				
+
+void USART2_Disable(void)
+{ 	
+	GPIO_InitTypeDef GPIO_InitStructure;
+#ifdef USART2_RX_EN		  	//如果使能了接收
+	//使能接收中断
+  USART_ITConfig(USART2, USART_IT_RXNE, DISABLE);//开启中断   	
+#endif	 					
+
+	USART_Cmd(USART2, DISABLE);                    //使能串口 
+	USART_DMACmd(USART2,USART_DMAReq_Tx,DISABLE);  	//使能串口2的DMA发送
+	
+	
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2 | GPIO_Pin_3;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;//浮空输入
+  GPIO_Init(GPIOA, &GPIO_InitStructure);  //初始化PA3
+	
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2,DISABLE);
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, DISABLE);	// GPIOA时钟
+	
+}
 
 
+void USART3_Disable(void)
+{ 	
+	GPIO_InitTypeDef GPIO_InitStructure;
+  //USART3_RX	  PB11
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10 | GPIO_Pin_11;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;//浮空输入
+  GPIO_Init(GPIOB, &GPIO_InitStructure);  //初始化PB11
 
+
+	USART_Cmd(USART3, DISABLE);                    //使能串口 
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART3,DISABLE);
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, DISABLE);	// GPIOB时钟
+	
+	
+ 	
+}
 
 
 
