@@ -67,7 +67,6 @@ int main(void)
 			res = GSM_Dect();
 			if(res){ Delay_Ms(1000);} else{ break;}
 		}
-		
 		if(res){ FlashLedFail(2); CAT4GPOWEROFF();SystemSleep();continue; }else {FlashLedOK(1);}
 		res = SIM900A_GET_LOCATION();
 		if(res){ FlashLedFail(4); Delay_Ms(1000);continue; }else {FlashLedOK(1);}
