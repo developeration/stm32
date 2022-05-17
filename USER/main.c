@@ -61,11 +61,11 @@ int main(void)
 		CAT4GPOWERON();
 		USART2_Init(115200);	 //初始化串口2 SIM
 		USART3_Init(9600);	//LOG信息	
-		Delay_Ms(2000);
+		Delay_Ms(500);
 		res=1;
 		for(oo=0;oo < 5;oo++){
 			res = GSM_Dect();
-			if(res){ Delay_Ms(2000);} else{ break;}
+			if(res){ Delay_Ms(1000);} else{ break;}
 		}
 		
 		if(res){ FlashLedFail(2); CAT4GPOWEROFF();SystemSleep();continue; }else {FlashLedOK(1);}
