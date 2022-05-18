@@ -62,21 +62,21 @@ int main(void)
 		CAT4GPOWERON();
 		USART2_Init(115200);	 //初始化串口2 SIM
 		USART3_Init(9600);	//LOG信息	
-		Delay_Ms(1000);
+		Delay_Ms(2000);
 		res=1;
 		for(oo=0;oo < 5;oo++){
 			res = GSM_Dect();
-			if(res){ Delay_Ms(1000);} else{ break;}
+			if(res){ Delay_Ms(2000);} else{ break;}
 		}
 		if(res){ FlashLedFail(2); SystemPrepareSleep();SystemSleep();continue; }else {FlashLedOK(1);}
 		res = SIM900A_GET_LOCATION();
-		if(res){ FlashLedFail(4); Delay_Ms(1000);continue; }else {FlashLedOK(1);}
+		if(res){ FlashLedFail(4); Delay_Ms(2000);continue; }else {FlashLedOK(1);}
 		res = SIM900A_CONNECT_SERVER_SEND_INFOR((u8*)"wix.eastus.cloudapp.azure.com",(u8*)"9000");	
-		if(res){ FlashLedFail(8); Delay_Ms(1000);continue; }else {FlashLedOK(1);} 
+		if(res){ FlashLedFail(8); Delay_Ms(2000);continue; }else {FlashLedOK(1);} 
 		SIM900A_GPRS_SEND_DATA(SIM_Location); 
 		FlashLedOK(1);
 		SystemPrepareSleep();
-		for(oo = 0;oo < 12 ; oo++){ 
+		for(oo = 0;oo < 5 ; oo++){ 
 			SystemSleep();
 			FlashLedOK(1);
 		}
