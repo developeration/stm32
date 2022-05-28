@@ -76,7 +76,7 @@ int main(void)
 		SIM900A_GPRS_SEND_DATA(SIM_Location); 
 		FlashLedOK(1);
 		SystemPrepareSleep();
-		for(oo = 0;oo < 5 ; oo++){ 
+		for(oo = 0;oo < 15 ; oo++){ 
 			SystemSleep();
 			FlashLedOK(1);
 		}
